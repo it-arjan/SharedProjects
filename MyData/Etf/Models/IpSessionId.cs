@@ -14,7 +14,6 @@ namespace MyData.Etf.Models
 
         public IpSessionId(MyData.Models.IpSessionId transfer)
         {
-            Id = transfer.Id;
             SessionID = transfer.SessionID;
             Ip = transfer.Ip;
         }

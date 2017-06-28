@@ -20,6 +20,7 @@ namespace MyData.Models
         }
         public PostbackData(MyData.Etf.Models.PostbackData transfer)
         {
+            Id = transfer.Id;
             MessageId = transfer.MessageId;
             UserName = transfer.UserName;
             Start = transfer.Start;

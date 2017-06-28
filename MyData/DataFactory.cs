@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace MyData
 {
-    public enum MyDbType { EtfDb, NancyApiDb, WebApiOdataDb };
+    public enum MyDbType { EtfDb, ApiDbNancy, ApiDbWebApi };
     public class DataFactory
     {
         private MyDbType _dbType;
@@ -14,10 +14,13 @@ namespace MyData
         {
             _dbType = type;
         }
-        public IData Db()
+
+        public IData Db(string baseUrl="optional", string oauthToken = "optional")
         {
-            return new Etf.EntityFrameworkDb();
+            if (_dbType == MyDbType.EtfDb) return new Etf.EntityFrameworkDb();
+            else return new NancyApi.NancyApiDb(baseUrl, oauthToken);
         }
+
         public IDataSetup DbSetup()
         {
             return new Etf.EtfSetup();

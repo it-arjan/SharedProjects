@@ -44,41 +44,27 @@ namespace MyData.Etf
             if (!typeFound) throw new Exception("You need to add type " + typeof(T).Name + " in this generic Add function" );
         }
 
-        public void Remove<T>(T data)
+        public void RemovePostback(int id)
         {
-            bool typeFound = false;
-            if (typeof(T) == typeof(MyData.Models.RequestLogEntry))
-            {
-                var x = data as MyData.Models.RequestLogEntry;
-                var y = new Etf.Models.RequestLogEntry(x);
-                _etfDb.RequestLogEntries.Remove(y);
-                typeFound = true;
-            }
-            if (typeof(T) == typeof(MyData.Models.PostbackData))
-            {
-                var x = data as MyData.Models.PostbackData;
-                var y = new Etf.Models.PostbackData(x);
-                _etfDb.Postbacks.Remove(y);
-                typeFound = true;
-            }
-            if (typeof(T) == typeof(MyData.Models.IpSessionId))
-            {
-                var x = data as MyData.Models.IpSessionId;
-                var y = new Etf.Models.IpSessionId(x);
-                _etfDb.IpSessionIds.Remove(y);
-                typeFound = true;
-            }
-            if (!typeFound) throw new Exception("You need to add type " + typeof(T).Name + " in this generic Add function");
+            var x = _etfDb.Postbacks.Find(id);
+            _etfDb.Postbacks.Remove(x);
+        }
+
+        public void RemoveRequestlog(int id)
+        {
+            var x = _etfDb.RequestLogEntries.Find(id);
+            _etfDb.RequestLogEntries.Remove(x);
+        }
+
+        public void RemoveIpSessionid(int id)
+        {
+            var x = _etfDb.IpSessionIds.Find(id);
+            _etfDb.IpSessionIds.Remove(x);
         }
 
         public bool IpSessionIdExists(string sessionId, string ip)
         {
             return _etfDb.IpSessionIds.Where(I => I.SessionID == sessionId && I.Ip == ip).Any();
-        }
-
-        public void Commit()
-        {
-            _etfDb.SaveChanges();
         }
 
         public List<MyData.Models.RequestLogEntry> GetRecentRequestLogs(int nr)
@@ -90,7 +76,7 @@ namespace MyData.Etf
 
         }
 
-        public List<MyData.Models.RequestLogEntry> GetRecentRequestLog(int nr, string SessionId)
+        public List<MyData.Models.RequestLogEntry> GetRecentRequestLogs(int nr, string SessionId)
         {
             var result = new List<MyData.Models.RequestLogEntry>();
             var etfTransfers = _etfDb.RequestLogEntries.Where(rq => rq.AspSessionId == SessionId).OrderByDescending(rq => rq.Timestamp).ToList();
@@ -137,14 +123,31 @@ namespace MyData.Etf
         public List<MyData.Models.PostbackData> GetRecentPostbacks(int nr, string SessionId)
         {
             var result = new List<MyData.Models.PostbackData>();
-            var etfTransfers = _etfDb.Postbacks.Where(pb => pb.AspSessionId==SessionId).OrderByDescending(c => c.Start).Take(nr).ToList();
+            var etfTransfers = _etfDb.Postbacks.Where(pb => pb.AspSessionId==SessionId).OrderByDescending(c => c.End).Take(nr).ToList();
             etfTransfers.ForEach(transfer => result.Add(new MyData.Models.PostbackData(transfer)));
             return result;
+        }
+
+        public void Commit()
+        {
+            _etfDb.SaveChanges();
         }
 
         public void Dispose()
         {
             _etfDb.Dispose();
         }
+
+        public void SetBaseApiUrl(string url)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void SetApiToken(string token)
+        {
+            throw new NotImplementedException();
+        }
+
+
     }
 }

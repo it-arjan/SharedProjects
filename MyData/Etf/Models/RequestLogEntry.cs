@@ -11,11 +11,6 @@ namespace MyData.Etf.Models
     public class RequestLogEntry
     {
 
-        public RequestLogEntry(RequestLogEntry toClone)
-        {
-            User = toClone.User;
-            Timestamp = toClone.Timestamp;
-        }
         public RequestLogEntry()
         {
             Timestamp = DateTime.Now;
@@ -23,7 +18,6 @@ namespace MyData.Etf.Models
 
         public RequestLogEntry(MyData.Models.RequestLogEntry transfer)
         {
-            Id = transfer.Id;
             User = transfer.User;
             Ip = transfer.Ip;
             AspSessionId = transfer.AspSessionId;
@@ -31,6 +25,7 @@ namespace MyData.Etf.Models
             ContentType = transfer.ContentType;
             RecentContributions = transfer.RecentContributions;
             Timestamp = transfer.Timestamp;
+            Path = transfer.Path;
         }
 
          [Key]

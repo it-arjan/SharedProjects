@@ -9,12 +9,7 @@ namespace MyData.Models
 {
     public class RequestLogEntry
     {
-        public RequestLogEntry(RequestLogEntry toClone)
-        {
-            User = toClone.User;
-            Timestamp = toClone.Timestamp;
-        }
-        public RequestLogEntry(MyData.Etf.Models.RequestLogEntry transfer)
+         public RequestLogEntry(MyData.Etf.Models.RequestLogEntry transfer)
         {
             Id = transfer.Id;
             User = transfer.User;
