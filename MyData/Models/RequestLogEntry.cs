@@ -9,7 +9,7 @@ namespace MyData.Models
 {
     public class RequestLogEntry
     {
-         public RequestLogEntry(MyData.Etf.Models.RequestLogEntry transfer)
+        public RequestLogEntry(MyData.Etf.Models.RequestLogEntry transfer)
         {
             Id = transfer.Id;
             User = transfer.User;
@@ -18,6 +18,7 @@ namespace MyData.Models
             Method = transfer.Method;
             ContentType = transfer.ContentType;
             RecentContributions = transfer.RecentContributions;
+            Path = transfer.Path;
             Timestamp = transfer.Timestamp;
         }
         public RequestLogEntry()
