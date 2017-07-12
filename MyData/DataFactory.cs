@@ -15,10 +15,10 @@ namespace MyData
             _dbType = type;
         }
 
-        public IData Db(string baseUrl="optional", string oauthToken = "optional")
+        public IData Db(string baseUrl= "forNancyApi", string oauthToken = "forNancyApi", string socketToken= "forNancyApi")
         {
             if (_dbType == MyDbType.EtfDb) return new Etf.EntityFrameworkDb();
-            else return new NancyApi.NancyApiDb(baseUrl, oauthToken);
+            else return new NancyApi.NancyApiDb(baseUrl, oauthToken, socketToken);
         }
 
         public IDataSetup DbSetup()

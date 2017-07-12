@@ -14,12 +14,13 @@ namespace MyData.NancyApi
     public class NancyApiDb : IData
     {
         private string _apiToken;
+        private string _socketToken;
         private string _apiBaseUrl;
-        public NancyApiDb(string url, string token)
+        public NancyApiDb(string url, string oauthToken, string socketToken)
         {
-            if (TokenExpired(token)) throw new Exception("SetApiToken: token expired");
-            _apiToken = token;
-
+            if (TokenExpired(oauthToken)) throw new Exception("SetApiToken: token expired");
+            _apiToken = oauthToken;
+            _socketToken = socketToken;
             //var text = GetRequest(string.Format("{0}postback", url), HttpContentTypes.TextPlain);
             // the public get has returned 200 OK
             _apiBaseUrl = url;
@@ -52,20 +53,37 @@ namespace MyData.NancyApi
             }
             if (!typeFound) throw new Exception("You need to add type " + typeof(T).Name + " in this generic Add function");
         }
-        private void Delete(string url)
+
+        private string GetRequest(string url, string contentType)
         {
             var eHttp = new EasyHttp.Http.HttpClient();
             eHttp.Request.AddExtraHeader("Authorization", string.Format("bearer {0}", _apiToken));
-            eHttp.Delete(url, HttpContentTypes.ApplicationJson);
-            if (eHttp.Response.StatusCode != System.Net.HttpStatusCode.NoContent)
+            eHttp.Request.AddExtraHeader("X-socketToken", _socketToken);
+            eHttp.Request.Accept = contentType;
+            eHttp.Get(url);
+            if (eHttp.Response.StatusCode != System.Net.HttpStatusCode.OK)
                 throw new HttpException(eHttp.Response.StatusCode, eHttp.Response.StatusDescription);
+
+            return eHttp.Response.RawText;
         }
+
         private void Post(string url, string json)
         {
             var eHttp = new EasyHttp.Http.HttpClient();
             eHttp.Request.AddExtraHeader("Authorization", string.Format("bearer {0}", _apiToken));
+            eHttp.Request.AddExtraHeader("X-socketToken", _socketToken);
             eHttp.Post(url, json, HttpContentTypes.ApplicationJson);
             if (eHttp.Response.StatusCode != System.Net.HttpStatusCode.OK)
+                throw new HttpException(eHttp.Response.StatusCode, eHttp.Response.StatusDescription);
+        }
+
+        private void Delete(string url)
+        {
+            var eHttp = new EasyHttp.Http.HttpClient();
+            eHttp.Request.AddExtraHeader("Authorization", string.Format("bearer {0}", _apiToken));
+            eHttp.Request.AddExtraHeader("X-socketToken", _socketToken);
+            eHttp.Delete(url, HttpContentTypes.ApplicationJson);
+            if (eHttp.Response.StatusCode != System.Net.HttpStatusCode.NoContent)
                 throw new HttpException(eHttp.Response.StatusCode, eHttp.Response.StatusDescription);
         }
 
@@ -97,17 +115,7 @@ namespace MyData.NancyApi
         {
             //not needed
         }
-        private string GetRequest(string url, string contentType)
-        {
-            var eHttp = new EasyHttp.Http.HttpClient();
-            eHttp.Request.AddExtraHeader("Authorization", string.Format("bearer {0}", _apiToken));
-            eHttp.Request.Accept = contentType;
-            eHttp.Get(url);
-            if (eHttp.Response.StatusCode != System.Net.HttpStatusCode.OK)
-                throw new HttpException(eHttp.Response.StatusCode, eHttp.Response.StatusDescription);
 
-            return eHttp.Response.RawText;
-        }
         public IpSessionId FindIpSessionId(int id)
         {
             var json = GetRequest(string.Format("{0}/ipsessionid/{1}", _apiBaseUrl, id), HttpContentTypes.ApplicationJson);
