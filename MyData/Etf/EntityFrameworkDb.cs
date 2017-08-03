@@ -79,7 +79,7 @@ namespace MyData.Etf
         public List<MyData.Models.RequestLogEntry> GetRecentRequestLogs(int nr, string SessionId)
         {
             var result = new List<MyData.Models.RequestLogEntry>();
-            var etfTransfers = _etfDb.RequestLogEntries.Where(rq => rq.AspSessionId == SessionId).OrderByDescending(rq => rq.Timestamp).ToList();
+            var etfTransfers = _etfDb.RequestLogEntries.Where(rq => rq.AspSessionId == SessionId).OrderByDescending(rq => rq.Timestamp).Take(nr).ToList();
             etfTransfers.ForEach(transfer => result.Add(new MyData.Models.RequestLogEntry(transfer)));
             return result;
         }
