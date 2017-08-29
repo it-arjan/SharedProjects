@@ -18,7 +18,6 @@ namespace MyData.Etf
 
         public DbSet<Models.PostbackData> Postbacks { get; set; }
         public DbSet<Models.RequestLogEntry> RequestLogEntries { get; set; }
-        public DbSet<Models.IpSessionId> IpSessionIds { get; set; }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {

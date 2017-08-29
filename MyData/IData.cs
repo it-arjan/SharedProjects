@@ -14,11 +14,6 @@ namespace MyData
 
         void RemovePostback(int id);
         void RemoveRequestlog(int id);
-        void RemoveIpSessionid(int id);
-
-        IpSessionId FindIpSessionId(int id);
-        bool        IpSessionIdExists(string sessionId, string ip);
-        bool            SessionIdExists(string aspSessionId);
 
         List<RequestLogEntry> GetRecentRequestLogs    (int nr);
         List<RequestLogEntry> GetRecentRequestLogs     (int nr, string SessionId);

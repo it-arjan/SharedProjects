@@ -78,10 +78,8 @@
       <DependentUpon>201705261434205_LinkSessionid-Ip.cs</DependentUpon>
     </Compile>
     <Compile Include="Etf\Migrations\Configuration.cs" />
-    <Compile Include="Etf\Models\IpSessionId.cs" />
     <Compile Include="Etf\Models\PostbackData.cs" />
     <Compile Include="Etf\Models\RequestLogEntry.cs" />
-    <Compile Include="Models\IpSessionId.cs" />
     <Compile Include="Models\PostbackData.cs" />
     <Compile Include="Models\RequestLogEntry.cs" />
     <Compile Include="NancyApi\NancyApiDb.cs" />

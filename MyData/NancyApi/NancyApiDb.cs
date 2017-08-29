@@ -44,13 +44,7 @@ namespace MyData.NancyApi
                 Post(url, JsonConvert.SerializeObject(x));
                 typeFound = true;
             }
-            if (typeof(T) == typeof(MyData.Models.IpSessionId))
-            {
-                var x = data as MyData.Models.IpSessionId;
-                string url = string.Format("{0}/ipsessionid", _apiBaseUrl);
-                Post(url, JsonConvert.SerializeObject(x));
-                typeFound = true;
-            }
+
             if (!typeFound) throw new Exception("You need to add type " + typeof(T).Name + " in this generic Add function");
         }
 
@@ -99,13 +93,6 @@ namespace MyData.NancyApi
             Delete(url);
         }
 
-        public void RemoveIpSessionid(int id)
-        {
-            string url = string.Format("{0}/ipsessionid/{1}", _apiBaseUrl, id);
-            Delete(url);
-        }
-
-
         public void Commit()
         {
             //not needed
@@ -114,12 +101,6 @@ namespace MyData.NancyApi
         public void Dispose()
         {
             //not needed
-        }
-
-        public IpSessionId FindIpSessionId(int id)
-        {
-            var json = GetRequest(string.Format("{0}/ipsessionid/{1}", _apiBaseUrl, id), HttpContentTypes.ApplicationJson);
-            return JsonConvert.DeserializeObject<IpSessionId>(json);
         }
 
         public PostbackData FindPostback(int id)
@@ -162,18 +143,6 @@ namespace MyData.NancyApi
         {
             var json = GetRequest(string.Format("{0}/requestlog/{1}/recent/take/{2}", _apiBaseUrl, aspSessionId, nr), HttpContentTypes.ApplicationJson);
             return JsonConvert.DeserializeObject<List<RequestLogEntry>>(json);
-        }
-
-        public bool IpSessionIdExists(string aspSessionId, string ip)
-        {
-            var text = GetRequest(string.Format("{0}/ipsessionid/exists/{1}/{2}", _apiBaseUrl, aspSessionId, ip), HttpContentTypes.ApplicationJson);
-            return text.ToLower().Contains("true");
-        }
-
-        public bool SessionIdExists(string aspSessionId)
-        {
-            var text = GetRequest(string.Format("{0}/ipsessionid/exists/{1}", _apiBaseUrl, aspSessionId), HttpContentTypes.ApplicationJson);
-            return text.ToLower().Contains("true");
         }
 
         private void SetApiToken(string token)
