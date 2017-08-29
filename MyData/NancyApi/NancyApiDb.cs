@@ -21,31 +21,21 @@ namespace MyData.NancyApi
             if (TokenExpired(oauthToken)) throw new Exception("SetApiToken: token expired");
             _apiToken = oauthToken;
             _socketToken = socketToken;
-            //var text = GetRequest(string.Format("{0}postback", url), HttpContentTypes.TextPlain);
-            // the public get has returned 200 OK
+
             _apiBaseUrl = url;
 
         }
-        public void Add<T>(T data)
+
+        public void AddPostback(MyData.Models.PostbackData pbd)
         {
-            bool typeFound = false;
+            string url = string.Format("{0}/postback", _apiBaseUrl);
+            Post(url, JsonConvert.SerializeObject(pbd));
+        }
 
-            if (typeof(T) == typeof(MyData.Models.RequestLogEntry))
-            {
-                var x = data as MyData.Models.RequestLogEntry;
-                string url = string.Format("{0}/requestlog", _apiBaseUrl);
-                Post(url, JsonConvert.SerializeObject(x));
-                typeFound = true;
-            }
-            if (typeof(T) == typeof(MyData.Models.PostbackData))
-            {
-                var x = data as MyData.Models.PostbackData;
-                string url = string.Format("{0}/postback", _apiBaseUrl);
-                Post(url, JsonConvert.SerializeObject(x));
-                typeFound = true;
-            }
-
-            if (!typeFound) throw new Exception("You need to add type " + typeof(T).Name + " in this generic Add function");
+        public void AddRequestlog(MyData.Models.RequestLogEntry re)
+        {
+            string url = string.Format("{0}/requestlog", _apiBaseUrl);
+            Post(url, JsonConvert.SerializeObject(re));
         }
 
         private string GetRequest(string url, string contentType)

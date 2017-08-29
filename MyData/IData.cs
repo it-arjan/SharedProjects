@@ -10,7 +10,8 @@ namespace MyData
 {
     public interface IData: IDisposable
     {
-        void        Add<T>(T data);
+        void AddPostback(PostbackData pbd);
+        void AddRequestlog(RequestLogEntry re);
 
         void RemovePostback(int id);
         void RemoveRequestlog(int id);

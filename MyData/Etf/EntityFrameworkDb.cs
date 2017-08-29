@@ -17,24 +17,16 @@ namespace MyData.Etf
             _etfDb = new FrontendDbContext();
         }
 
-        public void Add<T>(T data)
+        public void AddPostback(MyData.Models.PostbackData pbd)
         {
-            bool typeFound = false;
-            if(typeof(T) == typeof(MyData.Models.RequestLogEntry))
-            {
-                var x = data as MyData.Models.RequestLogEntry;
-                var y = new Etf.Models.RequestLogEntry(x);
-                _etfDb.RequestLogEntries.Add(y);
-                typeFound = true;
-            }
-            if (typeof(T) == typeof(MyData.Models.PostbackData))
-            {
-                var x = data as MyData.Models.PostbackData;
-                var y = new Etf.Models.PostbackData(x);
-                _etfDb.Postbacks.Add(y);
-                typeFound = true;
-            }
-            if (!typeFound) throw new Exception("You need to add type " + typeof(T).Name + " in this generic Add function" );
+            var y = new Etf.Models.PostbackData(pbd);
+            _etfDb.Postbacks.Add(y);
+        }
+
+        public void AddRequestlog(MyData.Models.RequestLogEntry re)
+        {
+            var y = new Etf.Models.RequestLogEntry(re);
+            _etfDb.RequestLogEntries.Add(y);
         }
 
         public void RemovePostback(int id)

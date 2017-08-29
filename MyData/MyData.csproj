@@ -80,6 +80,10 @@
     <Compile Include="Etf\Migrations\Configuration.cs" />
     <Compile Include="Etf\Models\PostbackData.cs" />
     <Compile Include="Etf\Models\RequestLogEntry.cs" />
+    <Compile Include="Migrations\201708291628523_removeIpSessionId.cs" />
+    <Compile Include="Migrations\201708291628523_removeIpSessionId.Designer.cs">
+      <DependentUpon>201708291628523_removeIpSessionId.cs</DependentUpon>
+    </Compile>
     <Compile Include="Models\PostbackData.cs" />
     <Compile Include="Models\RequestLogEntry.cs" />
     <Compile Include="NancyApi\NancyApiDb.cs" />
@@ -98,6 +102,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Etf\Migrations\201705261434205_LinkSessionid-Ip.resx">
       <DependentUpon>201705261434205_LinkSessionid-Ip.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201708291628523_removeIpSessionId.resx">
+      <DependentUpon>201708291628523_removeIpSessionId.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup />
