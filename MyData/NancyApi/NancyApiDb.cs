@@ -13,17 +13,19 @@ namespace MyData.NancyApi
 {
     public class NancyApiDb : IData
     {
-        private string _apiToken;
-        private string _socketToken;
+        private string _apiToken; // to access the data api
+        private string _socketServerAccessToken; // secure access to the socketserver
+        private string _socketToken; // to identify which socket
         private string _apiBaseUrl;
-        public NancyApiDb(string url, string oauthToken, string socketToken)
+
+        public NancyApiDb(string url, string oauthToken, string socketAccessToken, string socketToken)
         {
-            if (TokenExpired(oauthToken)) throw new Exception("SetApiToken: token expired");
+            if (TokenExpired(oauthToken)) throw new Exception("SetApiToken: oauth token expired");
             _apiToken = oauthToken;
+            _socketServerAccessToken = socketAccessToken;
             _socketToken = socketToken;
 
             _apiBaseUrl = url;
-
         }
 
         public void AddPostback(MyData.Models.PostbackData pbd)
@@ -42,7 +44,8 @@ namespace MyData.NancyApi
         {
             var eHttp = new EasyHttp.Http.HttpClient();
             eHttp.Request.AddExtraHeader("Authorization", string.Format("bearer {0}", _apiToken));
-            eHttp.Request.AddExtraHeader("X-socketToken", _socketToken);
+            eHttp.Request.AddExtraHeader("X-socketServerAccessToken", _socketServerAccessToken);
+            eHttp.Request.AddExtraHeader("X-socketFeedId", _socketToken);
             eHttp.Request.Accept = contentType;
             eHttp.Get(url);
             if (eHttp.Response.StatusCode != System.Net.HttpStatusCode.OK)
@@ -55,7 +58,8 @@ namespace MyData.NancyApi
         {
             var eHttp = new EasyHttp.Http.HttpClient();
             eHttp.Request.AddExtraHeader("Authorization", string.Format("bearer {0}", _apiToken));
-            eHttp.Request.AddExtraHeader("X-socketToken", _socketToken);
+            eHttp.Request.AddExtraHeader("X-socketServerAccessToken", _socketServerAccessToken);
+            eHttp.Request.AddExtraHeader("X-socketFeedId", _socketToken);
             eHttp.Post(url, json, HttpContentTypes.ApplicationJson);
             if (eHttp.Response.StatusCode != System.Net.HttpStatusCode.OK)
                 throw new HttpException(eHttp.Response.StatusCode, eHttp.Response.StatusDescription);
@@ -65,7 +69,8 @@ namespace MyData.NancyApi
         {
             var eHttp = new EasyHttp.Http.HttpClient();
             eHttp.Request.AddExtraHeader("Authorization", string.Format("bearer {0}", _apiToken));
-            eHttp.Request.AddExtraHeader("X-socketToken", _socketToken);
+            eHttp.Request.AddExtraHeader("X-socketServerAccessToken", _socketServerAccessToken);
+            eHttp.Request.AddExtraHeader("X-socketFeedId", _socketToken);
             eHttp.Delete(url, HttpContentTypes.ApplicationJson);
             if (eHttp.Response.StatusCode != System.Net.HttpStatusCode.NoContent)
                 throw new HttpException(eHttp.Response.StatusCode, eHttp.Response.StatusDescription);
@@ -135,23 +140,8 @@ namespace MyData.NancyApi
             return JsonConvert.DeserializeObject<List<RequestLogEntry>>(json);
         }
 
-        private void SetApiToken(string token)
-        {
-            if (TokenExpired(token))
-                throw new Exception("SetApiToken: token expired");
-            _apiToken = token;
-        }
-
-        private void SetBaseApiUrl(string url)
-        {
-            //var text = GetRequest(string.Format("{0}/postback", url), HttpContentTypes.TextPlain);
-            // public get has returned OK
-            _apiBaseUrl = url;
-        }
-
         private bool TokenExpired(string jwt)
         {
-            //_logger.Debug("Checking expiration of token({1}) {0}", jwt, scope);
             // #PastedCode
             //
             //=> Retrieve the 2nd part of the JWT token (this the JWT payload)
