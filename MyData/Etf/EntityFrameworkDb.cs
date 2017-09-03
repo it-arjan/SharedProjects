@@ -102,16 +102,70 @@ namespace MyData.Etf
             _etfDb.Dispose();
         }
 
-        public void SetBaseApiUrl(string url)
+        public Task AddPostbackAsync(MyData.Models.PostbackData pbd)
         {
+            // TODO
             throw new NotImplementedException();
         }
 
-        public void SetApiToken(string token)
+        public Task AddRequestlogAsync(MyData.Models.RequestLogEntry re)
         {
+            // TODO
             throw new NotImplementedException();
         }
 
+        public Task RemovePostbackAsync(int id)
+        {
+            // TODO
+            throw new NotImplementedException();
+        }
 
+        public Task RemoveRequestlogAsync(int id)
+        {
+            // TODO
+            throw new NotImplementedException();
+        }
+
+        public Task<List<MyData.Models.RequestLogEntry>> GetRecentRequestLogsAsync(int nr)
+        {
+            // TODO
+            throw new NotImplementedException();
+        }
+
+        public Task<List<MyData.Models.RequestLogEntry>> GetRecentRequestLogsAsync(int nr, string SessionId)
+        {
+            // TODO
+            throw new NotImplementedException();
+        }
+
+        public Task<MyData.Models.RequestLogEntry> FindRequestLogAsync(int id)
+        {
+            // TODO
+            throw new NotImplementedException();
+        }
+
+        public Task<MyData.Models.PostbackData> FindPostbackAsync(int id)
+        {
+            // TODO
+            throw new NotImplementedException();
+        }
+
+        public Task<List<MyData.Models.PostbackData>> GetRecentPostbacksAsync(int nr)
+        {
+            // TODO
+            throw new NotImplementedException();
+        }
+
+        public Task<List<MyData.Models.PostbackData>> GetRecentPostbacksAsync(int nr, string SessionId)
+        {
+            // TODO
+            throw new NotImplementedException();
+        }
+
+        public Task<List<MyData.Models.PostbackData>> GetPostbacksFromTodayAsync()
+        {
+            // TODO
+            throw new NotImplementedException();
+        }
     }
 }

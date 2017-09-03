@@ -8,11 +8,14 @@ using EasyHttp;
 using Newtonsoft.Json;
 using EasyHttp.Infrastructure;
 using EasyHttp.Http;
+using System.Net.Http;
+using NLogWrapper;
 
 namespace MyData.NancyApi
 {
     public class NancyApiDb : IData
     {
+        private static readonly NLogWrapper.ILogger _logger = LogManager.CreateLogger(typeof(NancyApiDb));
         private string _apiToken; // to access the data api
         private string _socketServerAccessToken; // secure access to the socketserver
         private string _socketToken; // to identify which socket
@@ -40,7 +43,7 @@ namespace MyData.NancyApi
             Post(url, JsonConvert.SerializeObject(re));
         }
 
-        private string GetRequest(string url, string contentType)
+        private string Get(string url, string contentType)
         {
             var eHttp = new EasyHttp.Http.HttpClient();
             eHttp.Request.AddExtraHeader("Authorization", string.Format("bearer {0}", _apiToken));
@@ -100,43 +103,43 @@ namespace MyData.NancyApi
 
         public PostbackData FindPostback(int id)
         {
-            var json = GetRequest(string.Format("{0}/postback/{1}", _apiBaseUrl, id), HttpContentTypes.ApplicationJson);
+            var json = Get(string.Format("{0}/postback/{1}", _apiBaseUrl, id), HttpContentTypes.ApplicationJson);
             return JsonConvert.DeserializeObject<PostbackData>(json);
         }
 
         public RequestLogEntry FindRequestLog(int id)
         {
-            var json = GetRequest(string.Format("{0}/requestlog/{1}", _apiBaseUrl, id), HttpContentTypes.ApplicationJson);
+            var json = Get(string.Format("{0}/requestlog/{1}", _apiBaseUrl, id), HttpContentTypes.ApplicationJson);
             return JsonConvert.DeserializeObject<RequestLogEntry>(json);
         }
 
         public List<PostbackData> GetPostbacksFromToday()
         {
-            var json = GetRequest(string.Format("{0}/postback/today", _apiBaseUrl), HttpContentTypes.ApplicationJson);
+            var json = Get(string.Format("{0}/postback/today", _apiBaseUrl), HttpContentTypes.ApplicationJson);
             return JsonConvert.DeserializeObject<List<PostbackData>>(json);
         }
 
         public List<PostbackData> GetRecentPostbacks(int nr)
         {
-            var json = GetRequest(string.Format("{0}/postback/recent/take/{1}", _apiBaseUrl, nr), HttpContentTypes.ApplicationJson);
+            var json = Get(string.Format("{0}/postback/recent/take/{1}", _apiBaseUrl, nr), HttpContentTypes.ApplicationJson);
             return JsonConvert.DeserializeObject<List<PostbackData>>(json);
         }
 
         public List<PostbackData> GetRecentPostbacks(int nr, string aspSessionId)
         {
-            var json = GetRequest(string.Format("{0}/postback/{1}/recent/take/{2}", _apiBaseUrl, aspSessionId, nr), HttpContentTypes.ApplicationJson);
+            var json = Get(string.Format("{0}/postback/{1}/recent/take/{2}", _apiBaseUrl, aspSessionId, nr), HttpContentTypes.ApplicationJson);
             return JsonConvert.DeserializeObject<List<PostbackData>>(json);
         }
 
         public List<RequestLogEntry> GetRecentRequestLogs(int nr)
         {
-            var json = GetRequest(string.Format("{0}/requestlog/recent/take/{1}", _apiBaseUrl, nr), HttpContentTypes.ApplicationJson);
+            var json = Get(string.Format("{0}/requestlog/recent/take/{1}", _apiBaseUrl, nr), HttpContentTypes.ApplicationJson);
             return JsonConvert.DeserializeObject<List<RequestLogEntry>>(json);
         }
 
         public List<RequestLogEntry> GetRecentRequestLogs(int nr, string aspSessionId)
         {
-            var json = GetRequest(string.Format("{0}/requestlog/{1}/recent/take/{2}", _apiBaseUrl, aspSessionId, nr), HttpContentTypes.ApplicationJson);
+            var json = Get(string.Format("{0}/requestlog/{1}/recent/take/{2}", _apiBaseUrl, aspSessionId, nr), HttpContentTypes.ApplicationJson);
             return JsonConvert.DeserializeObject<List<RequestLogEntry>>(json);
         }
 
@@ -173,6 +176,181 @@ namespace MyData.NancyApi
             return isExpired;
         }
 
+        public async Task<PostbackData> FindPostbackAsync(int id)
+        {
+            var json = await AsyncRequest(
+                System.Net.Http.HttpMethod.Get,
+                string.Format("{0}/postback/{1}", _apiBaseUrl, id),
+                json: null,
+                contentType: HttpContentTypes.ApplicationJson
+                );
+
+            return JsonConvert.DeserializeObject<PostbackData>(json);
+        }
+
+        public async Task AddPostbackAsync(PostbackData pbd)
+        {
+            string url = string.Format("{0}/postback", _apiBaseUrl);
+            await AsyncRequest(
+                System.Net.Http.HttpMethod.Post,
+                url, 
+                JsonConvert.SerializeObject(pbd), 
+                "application/json"
+                );
+
+        }
+
+        public async Task AddRequestlogAsync(RequestLogEntry re)
+        {
+            string url = string.Format("{0}/requestlog", _apiBaseUrl);
+            await AsyncRequest(
+                System.Net.Http.HttpMethod.Post,
+                url,
+                JsonConvert.SerializeObject(re),
+                "application/json"
+                );
+        }
+
+        public async Task RemovePostbackAsync(int id)
+        {
+            string url = string.Format("{0}/postback/{1}", _apiBaseUrl, id);
+            await AsyncRequest(
+                 System.Net.Http.HttpMethod.Delete,
+                 url,
+                 json:null,
+                 contentType: "application/json"
+                 );
+        }
+
+        public async Task RemoveRequestlogAsync(int id)
+        {
+            string url = string.Format("{0}/requestlog/{1}", _apiBaseUrl, id);
+            await AsyncRequest(
+                 System.Net.Http.HttpMethod.Delete,
+                 url,
+                 json: null,
+                 contentType: "application/json"
+                 );
+        }
+
+        public async Task<List<RequestLogEntry>> GetRecentRequestLogsAsync(int nr)
+        {
+            var json = await AsyncRequest(
+                System.Net.Http.HttpMethod.Get, 
+                string.Format("{0}/requestlog/recent/take/{1}", _apiBaseUrl, nr),
+                json: null,
+                contentType: HttpContentTypes.ApplicationJson
+                );
+            return JsonConvert.DeserializeObject<List<RequestLogEntry>>(json);
+        }
+
+        public async Task<List<RequestLogEntry>> GetRecentRequestLogsAsync(int nr, string aspSessionId)
+        {
+            var json = await AsyncRequest(
+                System.Net.Http.HttpMethod.Get, 
+                string.Format("{0}/requestlog/{1}/recent/take/{2}", _apiBaseUrl, aspSessionId, nr),
+                json: null,
+                contentType: HttpContentTypes.ApplicationJson
+                );
+            return JsonConvert.DeserializeObject<List<RequestLogEntry>>(json);
+        }
+
+        public async Task<RequestLogEntry> FindRequestLogAsync(int id)
+        {
+            var json = await AsyncRequest(
+                System.Net.Http.HttpMethod.Get, 
+                string.Format("{0}/requestlog/{1}", _apiBaseUrl, id),
+                json: null,
+                contentType: HttpContentTypes.ApplicationJson
+                );
+            return JsonConvert.DeserializeObject<RequestLogEntry>(json);
+
+        }
+
+        public async Task<List<PostbackData>> GetRecentPostbacksAsync(int nr)
+        {
+            var json = await AsyncRequest(
+                System.Net.Http.HttpMethod.Get, 
+                string.Format("{0}/postback/recent/take/{1}", _apiBaseUrl, nr),
+                json: null,
+                contentType: HttpContentTypes.ApplicationJson
+                );
+            return JsonConvert.DeserializeObject<List<PostbackData>>(json);
+        }
+
+        public async Task<List<PostbackData>> GetRecentPostbacksAsync(int nr, string aspSessionId)
+        {
+            var json = await AsyncRequest(
+                System.Net.Http.HttpMethod.Get, 
+                string.Format("{0}/postback/{1}/recent/take/{2}", _apiBaseUrl, aspSessionId, nr),
+                json: null,
+                contentType: HttpContentTypes.ApplicationJson
+                );
+            return JsonConvert.DeserializeObject<List<PostbackData>>(json);
+
+        }
+
+        public async Task<List<PostbackData>> GetPostbacksFromTodayAsync()
+        {
+            var json = await AsyncRequest(
+                System.Net.Http.HttpMethod.Get, 
+                string.Format("{0}/postback/today", _apiBaseUrl), 
+                json: null,
+                contentType: HttpContentTypes.ApplicationJson
+                );
+            return JsonConvert.DeserializeObject<List<PostbackData>>(json);
+
+        }
+
+        private async Task<string> AsyncRequest(System.Net.Http.HttpMethod method, string url, string json, string contentType)
+        {
+            HttpResponseMessage httpResponseMsg = null;
+            var httpClient = new System.Net.Http.HttpClient();
+
+            httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", _apiToken);
+            httpClient.DefaultRequestHeaders.Accept.Add(
+                new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue(contentType)
+                );
+            httpClient.DefaultRequestHeaders.Add("X-socketServerAccessToken", _socketServerAccessToken);
+            httpClient.DefaultRequestHeaders.Add("X-socketFeedId", _socketToken);
  
+            var ReponseMsg = string.Empty;
+
+            var resultStatus = System.Net.HttpStatusCode.Ambiguous;
+            try
+            {
+                if (method == System.Net.Http.HttpMethod.Get)
+                {
+                    httpResponseMsg = await httpClient.GetAsync(url);
+                }
+                else if (method == System.Net.Http.HttpMethod.Post)
+                {
+                    httpResponseMsg = await httpClient.PostAsync(url, new StringContent(json));
+                }
+                else if (method == System.Net.Http.HttpMethod.Delete)
+                {
+                    httpResponseMsg = await httpClient.DeleteAsync(url);
+                }
+                else
+                {
+                    throw new Exception("unkown method");
+                }
+                
+                resultStatus = httpResponseMsg.StatusCode;
+                var logMsg = string.Format("Log msg: {0} returned {1}", url, resultStatus);
+                _logger.Info(logMsg);
+
+                ReponseMsg = await httpResponseMsg.Content.ReadAsStringAsync();
+            }
+            catch (Exception ex)
+            {
+                ReponseMsg = ex.Message;
+                _logger.Error(ReponseMsg);
+            }
+
+            return ReponseMsg;
+        }
+
+
     }
 }
