@@ -69,6 +69,7 @@
     <Compile Include="Etf\EtfSetup.cs" />
     <Compile Include="DataFactory.cs" />
     <Compile Include="Etf\FrontendDbContext.cs" />
+    <Compile Include="Fake\FakeDb.cs" />
     <Compile Include="IDataSetup.cs" />
     <Compile Include="IData.cs" />
     <Compile Include="Etf\Migrations\201705101215225_InitialCreate.cs" />
@@ -92,6 +93,8 @@
     </Compile>
     <Compile Include="Models\PostbackData.cs" />
     <Compile Include="Models\RequestLogEntry.cs" />
+    <Compile Include="NancyApi\HttpIo.cs" />
+    <Compile Include="NancyApi\IHttpIo.cs" />
     <Compile Include="NancyApi\NancyApiDb.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
