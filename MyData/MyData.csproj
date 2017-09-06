@@ -93,9 +93,9 @@
     </Compile>
     <Compile Include="Models\PostbackData.cs" />
     <Compile Include="Models\RequestLogEntry.cs" />
-    <Compile Include="NancyApi\HttpIo.cs" />
-    <Compile Include="NancyApi\IHttpIo.cs" />
-    <Compile Include="NancyApi\NancyApiDb.cs" />
+    <Compile Include="WebApiDb\HttpIo.cs" />
+    <Compile Include="WebApiDb\IHttpIo.cs" />
+    <Compile Include="WebApiDb\WebApiDb.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -34,7 +34,7 @@ namespace MyData
                     _logger.Error(msg);
                     throw new Exception(msg); // return null better??
                 }
-                return new NancyApi.NancyApiDb(baseUrl, new HttpIo(oauthToken, socketServerAccessToken, socketFeedId));
+                return new NancyApi.WebApiDb(baseUrl, new HttpIo(oauthToken, socketServerAccessToken, socketFeedId));
             }
             else if (_dbType == MyDbType.FakeDb)
             {

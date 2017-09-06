@@ -14,7 +14,7 @@ namespace MyData.NancyApi
         private string _apiToken; // to access the data api
         private string _socketServerAccessToken; // secure access to the socketserver
         private string _socketToken; // to identify which socket
-        private static readonly NLogWrapper.ILogger _logger = LogManager.CreateLogger(typeof(NancyApiDb));
+        private static readonly NLogWrapper.ILogger _logger = LogManager.CreateLogger(typeof(WebApiDb));
 
         // static httpclient reduces overhead
         private static HttpClient _staticHttpClient = new HttpClient();

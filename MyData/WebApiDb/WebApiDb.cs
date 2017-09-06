@@ -13,13 +13,13 @@ using NLogWrapper;
 
 namespace MyData.NancyApi
 {
-    public class NancyApiDb : IData
+    public class WebApiDb : IData
     {
-        private static readonly NLogWrapper.ILogger _logger = LogManager.CreateLogger(typeof(NancyApiDb));
+        private static readonly NLogWrapper.ILogger _logger = LogManager.CreateLogger(typeof(WebApiDb));
         private string _apiBaseUrl;
         IHttpIo _dataSourceIo;
 
-        public NancyApiDb(string url, IHttpIo dataSourceIo)
+        public WebApiDb(string url, IHttpIo dataSourceIo)
         {
             _dataSourceIo = dataSourceIo;
 
