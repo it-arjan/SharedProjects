@@ -6,36 +6,38 @@ using System.Threading.Tasks;
 using System.Net.Http;
 using NLogWrapper;
 using EasyHttp.Infrastructure;
+using System.Diagnostics;
 
 namespace MyData.NancyApi
 {
     public class HttpIo : IHttpIo
     {
         private string _apiToken; // to access the data api
-        private string _socketServerAccessToken; // secure access to the socketserver
-        private string _socketToken; // to identify which socket
+        private string _socketAccessToken; // secure access to the socketserver
+        private string _apiFeedId; // to identify which socket
         private static readonly NLogWrapper.ILogger _logger = LogManager.CreateLogger(typeof(WebApiDb));
 
-        // static httpclient reduces overhead
-        private static HttpClient _staticHttpClient = new HttpClient();
+        // static httpclient reduces overhead, separate one for each logged on user
+        private static Dictionary<string, HttpClient> _staticHttpClientMap = new Dictionary<string, HttpClient>();
 
-        public HttpIo(string apiToken, string socketServerAccessToken, string socketFeedId)
+        public HttpIo(string apiToken, string socketServerAccessToken, string apiFeedId)
         {
             _apiToken = apiToken;
-            _socketServerAccessToken = socketServerAccessToken;
-            _socketToken = socketFeedId;
-            ResetSessionSpecificHeaders(_staticHttpClient);
-        }
+            _socketAccessToken = socketServerAccessToken;
+            _apiFeedId = apiFeedId;
+            if (!_staticHttpClientMap.ContainsKey(_socketAccessToken))
+            {
+                // first request of new user
+                var client = new HttpClient();
+                client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", _apiToken);
+                client.DefaultRequestHeaders.Remove("X-socketServerAccessToken");
+                client.DefaultRequestHeaders.Add("X-socketServerAccessToken", _socketAccessToken);
 
-        public void ResetSessionSpecificHeaders(HttpClient httpClient)
-        {
-            httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", _apiToken);
+                client.DefaultRequestHeaders.Remove("X-socketFeedId");
+                client.DefaultRequestHeaders.Add("X-socketFeedId", _apiFeedId);
 
-            httpClient.DefaultRequestHeaders.Remove("X-socketServerAccessToken");
-            httpClient.DefaultRequestHeaders.Add("X-socketServerAccessToken", _socketServerAccessToken);
-
-            httpClient.DefaultRequestHeaders.Remove("X-socketFeedId");
-            httpClient.DefaultRequestHeaders.Add("X-socketFeedId", _socketToken);
+                _staticHttpClientMap.Add(_socketAccessToken, client);
+            }
         }
 
         public string SyncRequest(System.Net.Http.HttpMethod method, string url, string json, string contentType)
@@ -43,8 +45,8 @@ namespace MyData.NancyApi
             HttpResponseMessage httpResponseMsg = null;
 
             var accept = new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue(contentType);
-            if (!_staticHttpClient.DefaultRequestHeaders.Accept.Contains(accept))
-                _staticHttpClient.DefaultRequestHeaders.Accept.Add(accept);
+            if (!StaticClient().DefaultRequestHeaders.Accept.Contains(accept))
+                StaticClient().DefaultRequestHeaders.Accept.Add(accept);
 
             var ReponseMsg = string.Empty;
 
@@ -53,15 +55,15 @@ namespace MyData.NancyApi
             {
                 if (method == System.Net.Http.HttpMethod.Get)
                 {
-                    httpResponseMsg = _staticHttpClient.GetAsync(url).Result;
+                    httpResponseMsg = StaticClient().GetAsync(url).Result;
                 }
                 else if (method == System.Net.Http.HttpMethod.Post)
                 {
-                    httpResponseMsg = _staticHttpClient.PostAsync(url, new StringContent(json)).Result;
+                    httpResponseMsg = StaticClient().PostAsync(url, new StringContent(json)).Result;
                 }
                 else if (method == System.Net.Http.HttpMethod.Delete)
                 {
-                    httpResponseMsg = _staticHttpClient.DeleteAsync(url).Result;
+                    httpResponseMsg = StaticClient().DeleteAsync(url).Result;
                 }
                 else
                 {
@@ -87,7 +89,7 @@ namespace MyData.NancyApi
         {
             HttpResponseMessage httpResponseMsg = null;
 
-            _staticHttpClient.DefaultRequestHeaders.Accept.Add(
+            StaticClient().DefaultRequestHeaders.Accept.Add(
                 new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue(contentType)
                 );
  
@@ -98,15 +100,15 @@ namespace MyData.NancyApi
             {
                 if (method == System.Net.Http.HttpMethod.Get)
                 {
-                    httpResponseMsg = await _staticHttpClient.GetAsync(url);
+                    httpResponseMsg = await StaticClient().GetAsync(url);
                 }
                 else if (method == System.Net.Http.HttpMethod.Post)
                 {
-                    httpResponseMsg = await _staticHttpClient.PostAsync(url, new StringContent(json));
+                    httpResponseMsg = await StaticClient().PostAsync(url, new StringContent(json));
                 }
                 else if (method == System.Net.Http.HttpMethod.Delete)
                 {
-                    httpResponseMsg = await _staticHttpClient.DeleteAsync(url);
+                    httpResponseMsg = await StaticClient().DeleteAsync(url);
                 }
                 else
                 {
@@ -126,6 +128,12 @@ namespace MyData.NancyApi
             }
 
             return ReponseMsg;
+        }
+
+        private HttpClient StaticClient()
+        {
+            Debug.Assert(_staticHttpClientMap != null && _staticHttpClientMap.ContainsKey(_socketAccessToken));
+            return _staticHttpClientMap[_socketAccessToken];
         }
     }
 }

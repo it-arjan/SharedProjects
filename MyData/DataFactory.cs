@@ -20,7 +20,8 @@ namespace MyData
             _dbType = type;
         }
 
-        public IData Db(string baseUrl= "forNancyApi", string oauthToken = "forNancyApi", string socketServerAccessToken = "SocketServerAccessToken", string socketFeedId= "SocketIdToken")
+        public IData Db(string baseUrl= "from NancyApi", string oauthToken = "from claimsprincipal", 
+            string socketServerAccessToken = "SocketServerAccessToken", string apiFeedId= "WebSocketId")
         {
             if (_dbType == MyDbType.EtfDb)
             {
@@ -34,7 +35,7 @@ namespace MyData
                     _logger.Error(msg);
                     throw new Exception(msg); // return null better??
                 }
-                return new NancyApi.WebApiDb(baseUrl, new HttpIo(oauthToken, socketServerAccessToken, socketFeedId));
+                return new NancyApi.WebApiDb(baseUrl, new HttpIo(oauthToken, socketServerAccessToken, apiFeedId));
             }
             else if (_dbType == MyDbType.FakeDb)
             {
@@ -45,7 +46,8 @@ namespace MyData
             _logger.Error(msg2);
             throw new Exception(msg2); // return null better??
         }
-            private bool OauthTokenExpired(string jwt)
+
+        private bool OauthTokenExpired(string jwt)
         {
             // #PastedCode
             //

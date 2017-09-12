@@ -21,12 +21,26 @@ namespace MyData.Models
             Path = transfer.Path;
             Timestamp = transfer.Timestamp;
         }
+        public RequestLogEntry(System.Data.DataRow dRow)
+        {
+            int.TryParse(dRow["Id"].ToString(), out int intId);
+            int.TryParse(dRow["RecentContributions"].ToString(), out int intRecentContributions);
+
+            Id = intId;
+            User = dRow["User"].ToString(); ;
+            Ip = dRow["Ip"].ToString();
+            AspSessionId = dRow["AspSessionId"].ToString();
+            Path = dRow["Path"].ToString();
+            Method = dRow["Method"].ToString(); ;
+            ContentType = dRow["ContentType"].ToString(); ;
+
+            RecentContributions = intRecentContributions;
+        }
+
         public RequestLogEntry()
         {
             Timestamp = DateTime.Now;
         }
-        [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
         public string User { get; set; }
         public string Ip { get; set; }

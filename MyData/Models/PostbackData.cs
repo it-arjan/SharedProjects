@@ -17,6 +17,7 @@ namespace MyData.Models
             End = toClone.End;
             Duration = toClone.Duration;
             Content = toClone.Content;
+            AspSessionId = toClone.AspSessionId;
         }
         public PostbackData(MyData.Etf.Models.PostbackData transfer)
         {
@@ -27,12 +28,33 @@ namespace MyData.Models
             End = transfer.End;
             Duration = transfer.Duration;
             Content = transfer.Content;
+            AspSessionId = transfer.AspSessionId;
         }
+
+        public PostbackData(System.Data.DataRow dRow)
+        {
+            int.TryParse(dRow["Id"].ToString(), out int intId);
+            DateTime.TryParse(dRow["Start"].ToString(), out DateTime dtStart);
+            int.TryParse(dRow["Duration"].ToString(), out int intDuration);
+            DateTime.TryParse(dRow["End"].ToString(), out DateTime dtEnd);
+
+            Id = intId;
+            MessageId = dRow["MessageId"].ToString();
+            Content = dRow["Content"].ToString();
+            AspSessionId = dRow["AspSessionId"].ToString();
+            UserName = dRow["UserName"].ToString(); ;
+
+            Start = dtStart;
+            End = dtEnd;
+            Duration = intDuration;
+        }
+
         public PostbackData()
         {
             Start = DateTime.Now;
             End = DateTime.Now;
         }
+
         public int Id { get; set; }
         public string MessageId { get; set; }
         public string UserName { get; set; }
